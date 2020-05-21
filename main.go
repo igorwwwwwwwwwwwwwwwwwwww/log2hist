@@ -68,7 +68,7 @@ func main() {
 		numDigits := len(strconv.Itoa(int(largestBucket)))
 		numFormat := fmt.Sprintf("%%%dd", numDigits)
 
-		fmt.Printf("%s\n", k)
+		fmt.Printf("%s (%d)\n", k, hdr.TotalCount())
 		for _, bar := range hdr.Distribution() {
 			// TODO: collapse buckets (?)
 			// if bar.Count == 0 {
