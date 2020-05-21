@@ -54,4 +54,4 @@ MIT.
 
 ## TODO
 
-* Explore alternate histogram implementations: [prometheus](https://github.com/prometheus/client_golang/blob/master/prometheus/histogram.go), [tally](https://github.com/uber-go/tally/blob/master/histogram.go), [llhist](https://github.com/circonus-labs/circonusllhist).
+* Explore alternate histogram implementations: [prometheus](https://github.com/prometheus/client_golang/blob/master/prometheus/histogram.go), [tally](https://github.com/uber-go/tally/blob/master/histogram.go), [llhist](https://github.com/circonus-labs/circonusllhist), [bcc](https://github.com/iovisor/bcc/blob/master/src/python/bcc/table.py).
