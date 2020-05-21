@@ -77,6 +77,7 @@ func main() {
 
 			// TODO: make scaleFactor configurable
 			// TODO: indent everything with spaces (proper tables)
+			// TODO: figure out the proper scientific notation for inclusive/exclusive range
 
 			pct := int(bar.Count * 100 / largestBucket)
 			scaleFactor := 0.4
