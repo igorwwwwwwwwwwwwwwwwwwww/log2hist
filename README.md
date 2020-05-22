@@ -54,5 +54,5 @@ MIT.
 
 ## TODO
 
-* Come up with a better name.
+* Come up with a better name, maybe log2hist.
 * Explore alternate histogram implementations: [prometheus](https://github.com/prometheus/client_golang/blob/master/prometheus/histogram.go), [tally](https://github.com/uber-go/tally/blob/master/histogram.go), [llhist](https://github.com/circonus-labs/circonusllhist), [bcc](https://github.com/iovisor/bcc/blob/master/src/python/bcc/table.py) ([`helpers.h`](https://github.com/iovisor/bcc/blob/74e66b4f6730e0708f97150ac23d5951c5684ff8/src/cc/export/helpers.h#L765)).
