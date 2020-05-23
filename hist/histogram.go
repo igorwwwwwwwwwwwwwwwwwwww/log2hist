@@ -28,20 +28,18 @@ func indexLabel(power int) string {
 
 // https://github.com/iovisor/bpftrace/blob/1ece0d0b1441aa70d4a6b324fb852954a5989eab/src/output.cpp#L166
 func (h Histogram) String() string {
-	var minIdx, maxIdx int
+	var minIdx = -1
+	var maxIdx = 0
 	var maxVal uint64
 
 	for i, val := range h.Bins {
-		if val == 0 {
-			continue
-		}
-		if i < minIdx || (minIdx == 0 && h.Bins[0] == 0) {
-			minIdx = i
-		}
-		if i > maxIdx {
+		if val > 0 {
+			if minIdx == -1 {
+				minIdx = i
+			}
 			maxIdx = i
 		}
-		if val > uint64(maxVal) {
+		if val > maxVal {
 			maxVal = val
 		}
 	}
@@ -51,8 +49,10 @@ func (h Histogram) String() string {
 	for i := minIdx; i <= maxIdx; i++ {
 		var header string
 		if i == 0 {
-			header = "[0]"
+			header = "(..., 0)"
 		} else if i == 1 {
+			header = "[0]"
+		} else if i == 2 {
 			header = "[1]"
 		} else {
 			header = "[" + indexLabel(i-2) + ", " + indexLabel(i-1) + ")"
@@ -73,8 +73,6 @@ func (h Histogram) String() string {
 func (h *Histogram) Record(val uint64) error {
 	i := uint64(math.Floor(2 + math.Log2(float64(val))))
 	if val == 0 {
-		i = 0
-	} else if val == 1 {
 		i = 1
 	}
 	if i >= 64 || i < 0 {
