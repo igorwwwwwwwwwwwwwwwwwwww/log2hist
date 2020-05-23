@@ -12,14 +12,24 @@ import (
 	"github.com/igorwwwwwwwwwwwwwwwwwwww/log2hist/hist"
 )
 
-// TODO: support reading from file
 // TODO: support non group-by mode
 // TODO: scaling factor (e.g. bytes => GiB)
 
 func main() {
+	var err error
+
 	m := make(map[string]*hist.Histogram)
 
-	scanner := bufio.NewScanner(os.Stdin)
+	r := os.Stdin
+	if len(os.Args) > 1 {
+		file := os.Args[1]
+		r, err = os.Open(file)
+		if err != nil {
+			log.Fatalf("could not open file %v: %v", file, err)
+		}
+	}
+
+	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
 		line := scanner.Text()
 
