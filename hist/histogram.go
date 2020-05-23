@@ -55,7 +55,7 @@ func (h Histogram) String() string {
 		} else if i == 1 {
 			header = "[1]"
 		} else {
-			header = "[" + indexLabel(i-1) + ", " + indexLabel(i) + ")"
+			header = "[" + indexLabel(i-2) + ", " + indexLabel(i-1) + ")"
 		}
 
 		maxWidth := 52
@@ -71,7 +71,12 @@ func (h Histogram) String() string {
 // TODO: fix 1 being recorded as bucket 0
 
 func (h *Histogram) Record(val uint64) error {
-	i := uint64(math.Ceil(1 + math.Log2(float64(val))))
+	i := uint64(math.Floor(2 + math.Log2(float64(val))))
+	if val == 0 {
+		i = 0
+	} else if val == 1 {
+		i = 1
+	}
 	if i >= 64 || i < 0 {
 		return RecordError
 	}

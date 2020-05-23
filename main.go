@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -12,17 +13,21 @@ import (
 	"github.com/igorwwwwwwwwwwwwwwwwwwww/log2hist/hist"
 )
 
-// TODO: support non group-by mode
 // TODO: scaling factor (e.g. bytes => GiB)
+
+var group = flag.Bool("g", false, `if enabled, input is expected in "key val" format; defaults to false`)
 
 func main() {
 	var err error
 
 	m := make(map[string]*hist.Histogram)
 
+	flag.Parse()
+	args := flag.Args()
+
 	r := os.Stdin
-	if len(os.Args) > 1 {
-		file := os.Args[1]
+	if len(args) > 0 {
+		file := args[1]
 		r, err = os.Open(file)
 		if err != nil {
 			log.Fatalf("could not open file %v: %v", file, err)
@@ -37,14 +42,20 @@ func main() {
 			continue
 		}
 
-		fields := strings.Fields(line)
-		if len(fields) != 2 {
-			log.Printf("warning: ignoring bad value, expected k <space> value, got %v", fields)
-			continue
+		key := ""
+		rawval := line
+
+		if *group {
+			fields := strings.Fields(line)
+			if len(fields) != 2 {
+				log.Printf("warning: ignoring bad value, expected k <space> value, got %v", fields)
+				continue
+			}
+
+			key = fields[0]
+			rawval = fields[1]
 		}
 
-		key := fields[0]
-		rawval := fields[1]
 		val, err := strconv.ParseUint(rawval, 10, 64)
 		if err != nil {
 			log.Printf("warning: ignoring bad value, expected int, got %v", rawval)
@@ -66,6 +77,12 @@ func main() {
 
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
+	}
+
+	if !*group {
+		// in non group-by mode, the empty key is used to store the global histogram
+		fmt.Println(m[""])
+		return
 	}
 
 	// TODO: top-k mode for high-cardinality keys
