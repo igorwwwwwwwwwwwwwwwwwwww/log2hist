@@ -15,10 +15,10 @@ $ shuf -i 2000-65000 -n 200 | log2hist
   [32768, 65536)       91 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
 ```
 
-## License
-
-MIT.
-
 ## Credits
 
 The code and idea are heavily influenced by the log2 histograms from [bpftrace](https://github.com/iovisor/bpftrace/blob/1ece0d0b1441aa70d4a6b324fb852954a5989eab/src/output.cpp#L166).
+
+## License
+
+MIT.
