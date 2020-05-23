@@ -1,6 +1,6 @@
-# histy
+# log2hist
 
-Histy is a histogram renderer.
+log2hist is a histogram renderer.
 
 It transforms input in the shape of:
 
@@ -54,5 +54,4 @@ MIT.
 
 ## TODO
 
-* Come up with a better name, maybe log2hist.
 * Explore alternate histogram implementations: [prometheus](https://github.com/prometheus/client_golang/blob/master/prometheus/histogram.go), [tally](https://github.com/uber-go/tally/blob/master/histogram.go), [llhist](https://github.com/circonus-labs/circonusllhist), [bcc](https://github.com/iovisor/bcc/blob/master/src/python/bcc/table.py) ([`helpers.h`](https://github.com/iovisor/bcc/blob/74e66b4f6730e0708f97150ac23d5951c5684ff8/src/cc/export/helpers.h#L765)), [bpftrace](https://github.com/iovisor/bpftrace/blob/1ece0d0b1441aa70d4a6b324fb852954a5989eab/src/output.cpp#L166).
