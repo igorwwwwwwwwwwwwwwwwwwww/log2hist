@@ -37,19 +37,18 @@ func main() {
 			continue
 		}
 
-		parts := strings.Split(line, " ")
-		if len(parts) != 2 {
-			// TODO: support any whitespace here
-			// TODO: custom separator to support keys containing spaces (or just
-			//       use the last space of the line to split)
-			log.Fatalf("warning: ignoring bad value, expected k <space> value, got %v", parts)
+		fields := strings.Fields(line)
+		if len(fields) != 2 {
+			log.Printf("warning: ignoring bad value, expected k <space> value, got %v", fields)
+			continue
 		}
 
-		key := parts[0]
-		rawval := parts[1]
+		key := fields[0]
+		rawval := fields[1]
 		val, err := strconv.ParseUint(rawval, 10, 64)
 		if err != nil {
-			log.Fatalf("warning: ignoring bad value, expected int, got %v", rawval)
+			log.Printf("warning: ignoring bad value, expected int, got %v", rawval)
+			continue
 		}
 
 		h, ok := m[key]
@@ -61,6 +60,7 @@ func main() {
 		err = h.Record(val)
 		if err != nil {
 			log.Printf("warning: ignoring bad value %v, got error: %v", val, err)
+			continue
 		}
 	}
 
