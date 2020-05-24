@@ -34,7 +34,7 @@ func main() {
 		}
 	}
 
-	scanner := bufio.NewScanner(r)
+	scanner := bufio.NewScanner(bufio.NewReader(r))
 	for scanner.Scan() {
 		line := scanner.Text()
 
