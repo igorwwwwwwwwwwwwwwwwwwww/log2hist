@@ -35,7 +35,7 @@ func run(r io.Reader, w io.Writer) error {
 
 		val, err := bconv.ParseUint(rawval, 10, 64)
 		if err != nil {
-			log.Printf("warning: ignoring bad value, expected int, got %v", rawval)
+			log.Printf("warning: ignoring bad value, expected int, got %s", rawval)
 			continue
 		}
 
@@ -68,7 +68,7 @@ func runWithGroup(r io.Reader, w io.Writer) error {
 
 		fields := bytes.Fields(line)
 		if len(fields) != 2 {
-			log.Printf("warning: ignoring bad value, expected k <space> value, got %v", fields)
+			log.Printf("warning: ignoring bad value, expected k <space> value, got %s", fields)
 			continue
 		}
 
@@ -77,7 +77,7 @@ func runWithGroup(r io.Reader, w io.Writer) error {
 
 		val, err := bconv.ParseUint(rawval, 10, 64)
 		if err != nil {
-			log.Printf("warning: ignoring bad value, expected int, got %v", rawval)
+			log.Printf("warning: ignoring bad value, expected int, got %s", rawval)
 			continue
 		}
 
