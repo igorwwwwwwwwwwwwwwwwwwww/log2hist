@@ -1,0 +1,4 @@
+github.com/pkg/profile v1.5.0 h1:042Buzk+NhDI+DeSAA62RwJL8VAuZUMQZUjCsRz1Mug=
+github.com/pkg/profile v1.5.0/go.mod h1:qBsxPvzyUincmltOk6iyRVxHYg4adc0OFOv72ZdLa18=
+github.com/titanous/bconv v0.0.0-20130107162808-98f87e13de02 h1:MN6GvDAm2qSlUcFfVasJoWACMwx80VJWr04h6Q6MwAY=
+github.com/titanous/bconv v0.0.0-20130107162808-98f87e13de02/go.mod h1:M5933pdEkiJwYPYOtFSVbh2WGvK5tBkbbtXKNkd6VJc=

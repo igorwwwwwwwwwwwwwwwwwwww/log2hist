@@ -2,22 +2,28 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 	"sort"
-	"strconv"
-	"strings"
 
 	"github.com/igorwwwwwwwwwwwwwwwwwwww/log2hist/hist"
+	"github.com/pkg/profile"
+	"github.com/titanous/bconv"
 )
 
 // TODO: scaling factor (e.g. bytes => GiB)
 
 var group = flag.Bool("g", false, `if enabled, input is expected in "key val" format; defaults to false`)
+var pprof = flag.Bool("pprof", false, `if enabled, cpu profile is taken; defaults to false`)
 
 func main() {
+	if *pprof {
+		defer profile.Start().Stop()
+	}
+
 	var err error
 
 	m := make(map[string]*hist.Histogram)
