@@ -145,6 +145,7 @@ func main() {
 	}
 
 	w := bufio.NewWriter(os.Stdout)
+	defer w.Flush()
 
 	if !*group {
 		err = run(r, w)
