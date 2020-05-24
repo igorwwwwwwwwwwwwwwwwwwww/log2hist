@@ -40,19 +40,19 @@ func main() {
 		}
 	}
 
-	scanner := bufio.NewScanner(bufio.NewReader(r))
+	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
-		line := scanner.Text()
+		line := scanner.Bytes()
 
-		if line == "" {
+		if len(line) == 0 {
 			continue
 		}
 
-		key := ""
+		key := []byte{}
 		rawval := line
 
 		if *group {
-			fields := strings.Fields(line)
+			fields := bytes.Fields(line)
 			if len(fields) != 2 {
 				log.Printf("warning: ignoring bad value, expected k <space> value, got %v", fields)
 				continue
@@ -62,16 +62,17 @@ func main() {
 			rawval = fields[1]
 		}
 
-		val, err := strconv.ParseUint(rawval, 10, 64)
+		val, err := bconv.ParseUint(rawval, 10, 64)
 		if err != nil {
 			log.Printf("warning: ignoring bad value, expected int, got %v", rawval)
 			continue
 		}
 
-		h, ok := m[key]
+		strkey := string(key)
+		h, ok := m[strkey]
 		if !ok {
 			h = hist.New()
-			m[key] = h
+			m[strkey] = h
 		}
 
 		err = h.Record(val)
