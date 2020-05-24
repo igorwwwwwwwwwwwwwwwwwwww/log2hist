@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"sort"
@@ -19,26 +20,8 @@ import (
 var group = flag.Bool("g", false, `if enabled, input is expected in "key val" format; defaults to false`)
 var pprof = flag.Bool("pprof", false, `if enabled, cpu profile is taken; defaults to false`)
 
-func main() {
-	if *pprof {
-		defer profile.Start().Stop()
-	}
-
-	var err error
-
-	m := make(map[string]*hist.Histogram)
-
-	flag.Parse()
-	args := flag.Args()
-
-	r := os.Stdin
-	if len(args) > 0 {
-		file := args[0]
-		r, err = os.Open(file)
-		if err != nil {
-			log.Fatalf("could not open file %v: %v", file, err)
-		}
-	}
+func run(r io.Reader, w io.Writer) error {
+	h := hist.New()
 
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
@@ -48,19 +31,49 @@ func main() {
 			continue
 		}
 
-		key := []byte{}
 		rawval := line
 
-		if *group {
-			fields := bytes.Fields(line)
-			if len(fields) != 2 {
-				log.Printf("warning: ignoring bad value, expected k <space> value, got %v", fields)
-				continue
-			}
-
-			key = fields[0]
-			rawval = fields[1]
+		val, err := bconv.ParseUint(rawval, 10, 64)
+		if err != nil {
+			log.Printf("warning: ignoring bad value, expected int, got %v", rawval)
+			continue
 		}
+
+		err = h.Record(val)
+		if err != nil {
+			log.Printf("warning: ignoring bad value %v, got error: %v", val, err)
+			continue
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return err
+	}
+
+	fmt.Fprintln(w, h)
+
+	return nil
+}
+
+func runWithGroup(r io.Reader, w io.Writer) error {
+	m := make(map[string]*hist.Histogram)
+
+	scanner := bufio.NewScanner(r)
+	for scanner.Scan() {
+		line := scanner.Bytes()
+
+		if len(line) == 0 {
+			continue
+		}
+
+		fields := bytes.Fields(line)
+		if len(fields) != 2 {
+			log.Printf("warning: ignoring bad value, expected k <space> value, got %v", fields)
+			continue
+		}
+
+		key := fields[0]
+		rawval := fields[1]
 
 		val, err := bconv.ParseUint(rawval, 10, 64)
 		if err != nil {
@@ -83,13 +96,7 @@ func main() {
 	}
 
 	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
-
-	if !*group {
-		// in non group-by mode, the empty key is used to store the global histogram
-		fmt.Println(m[""])
-		return
+		return err
 	}
 
 	// TODO: top-k mode for high-cardinality keys
@@ -111,7 +118,44 @@ func main() {
 	})
 
 	for _, k := range keys {
-		fmt.Println(k)
-		fmt.Println(m[k])
+		fmt.Fprintln(w, k)
+		fmt.Fprintln(w, m[k])
+	}
+
+	return nil
+}
+
+func main() {
+	if *pprof {
+		defer profile.Start().Stop()
+	}
+
+	var err error
+
+	flag.Parse()
+	args := flag.Args()
+
+	r := os.Stdin
+	if len(args) > 0 {
+		file := args[0]
+		r, err = os.Open(file)
+		if err != nil {
+			log.Fatalf("could not open file %v: %v", file, err)
+		}
+	}
+
+	w := bufio.NewWriter(os.Stdout)
+
+	if !*group {
+		err = run(r, w)
+		if err != nil {
+			log.Fatal(err)
+		}
+		return
+	}
+
+	err = runWithGroup(r, w)
+	if err != nil {
+		log.Fatal(err)
 	}
 }
