@@ -27,7 +27,7 @@ func main() {
 
 	r := os.Stdin
 	if len(args) > 0 {
-		file := args[1]
+		file := args[0]
 		r, err = os.Open(file)
 		if err != nil {
 			log.Fatalf("could not open file %v: %v", file, err)
