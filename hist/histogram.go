@@ -60,9 +60,9 @@ func (h Histogram) String() string {
 
 		maxWidth := 52
 		barWidth := uint64((float64(h.Bins[i]) / float64(maxVal)) * float64(maxWidth))
-		bar := strings.Repeat("@", int(barWidth))
+		bar := strings.Repeat("∎", int(barWidth))
 
-		out = out + fmt.Sprintf("%16s %8d |%-52s|\n", header, h.Bins[i], bar)
+		out = out + fmt.Sprintf("%16s %8d  %-52s\n", header, h.Bins[i], bar)
 	}
 
 	return out
