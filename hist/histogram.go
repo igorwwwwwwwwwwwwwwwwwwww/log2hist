@@ -68,8 +68,6 @@ func (h Histogram) String() string {
 	return out
 }
 
-// TODO: fix 1 being recorded as bucket 0
-
 func (h *Histogram) Record(val uint64) error {
 	i := uint64(math.Floor(2 + math.Log2(float64(val))))
 	if val == 0 {
