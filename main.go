@@ -16,6 +16,7 @@ import (
 )
 
 // TODO: scaling factor (e.g. bytes => GiB)
+// TODO: heatmap mode (github.com/mkaz/termgraph)
 
 var group = flag.Bool("g", false, `if enabled, input is expected in "key val" format; defaults to false`)
 var pprof = flag.Bool("pprof", false, `if enabled, cpu profile is taken; defaults to false`)
