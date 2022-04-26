@@ -51,7 +51,10 @@ func run(r io.Reader, w io.Writer) error {
 		return err
 	}
 
-	fmt.Fprintln(w, h)
+	s := h.String()
+	if s != "" {
+		fmt.Fprintln(w, s)
+	}
 
 	return nil
 }

@@ -44,6 +44,10 @@ func (h Histogram) String() string {
 		}
 	}
 
+	if minIdx == -1 {
+		return ""
+	}
+
 	var out string
 
 	for i := minIdx; i <= maxIdx; i++ {
