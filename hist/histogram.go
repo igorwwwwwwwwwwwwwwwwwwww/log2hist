@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-var RecordError = errors.New("value must be within range 0..2^63")
+var ErrRecord = errors.New("value must be within range 0..2^63")
 
 type Histogram struct {
 	Bins  []uint64
@@ -77,8 +77,8 @@ func (h *Histogram) Record(val uint64) error {
 	if val == 0 {
 		i = 1
 	}
-	if i >= 64 || i < 0 {
-		return RecordError
+	if i >= 64 {
+		return ErrRecord
 	}
 	h.Bins[i]++
 	h.Count++
