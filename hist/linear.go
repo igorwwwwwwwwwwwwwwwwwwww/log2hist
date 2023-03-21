@@ -20,7 +20,7 @@ func NewLinear(min, max, step int) Histogram {
 		Min:   min,
 		Max:   max,
 		Step:  step,
-		Bins:  make([]uint64, buckets),
+		Bins:  make([]uint64, buckets+2),
 		Count: 0,
 	}
 }
@@ -50,7 +50,7 @@ func (h LinearHistogram) String() string {
 	var startVal, endVal int
 
 	buckets := (h.Max - h.Min) / h.Step
-	for i := 0; i < int(buckets); i++ {
+	for i := 0; i <= buckets+1; i++ {
 		val := h.Bins[i]
 		if val > 0 {
 			if startVal == -1 {
@@ -88,20 +88,20 @@ func (h LinearHistogram) String() string {
 
 // https://github.com/iovisor/bpftrace/blob/70ee22cb14e2eedc5df17e53965824d7381f8e6f/src/ast/passes/codegen_llvm.cpp#L2980-L2991
 func (h *LinearHistogram) Record(val uint64) error {
-	i := h.index(val)
+	i := uint64(h.index(val))
 	h.Bins[i]++
 	h.Count++
 	return nil
 }
 
-func (h LinearHistogram) index(val uint64) uint64 {
+func (h LinearHistogram) index(val uint64) int {
 	if int(val) < h.Min {
 		return 0
 	}
 	if int(val) > h.Max {
-		return uint64(1 + (h.Max-h.Min)/h.Step)
+		return 1 + (h.Max-h.Min)/h.Step
 	}
-	return uint64(1 + (int(val)-h.Min)/h.Step)
+	return 1 + (int(val)-h.Min)/h.Step
 }
 
 func (h LinearHistogram) GetCount() uint64 {
