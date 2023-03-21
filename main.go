@@ -98,7 +98,6 @@ func runWithGroup(r io.Reader, w io.Writer) error {
 		strkey := string(key)
 		h, ok := m[strkey]
 		if !ok {
-			var h hist.Histogram
 			if *linear {
 				h = hist.NewLinear(*min, *max, *step)
 			} else {
