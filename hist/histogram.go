@@ -10,24 +10,30 @@ import (
 
 var ErrRecord = errors.New("value must be within range 0..2^63")
 
-type Histogram struct {
+type Histogram interface {
+	Record(val uint64) error
+	GetCount() uint64
+	String() string
+}
+
+type LogHistogram struct {
 	Bins  []uint64
 	Count uint64
 }
 
-func New() *Histogram {
-	return &Histogram{
+func NewLog() Histogram {
+	return &LogHistogram{
 		Bins:  make([]uint64, 64),
 		Count: 0,
 	}
 }
 
-func indexLabel(power int) string {
+func (h LogHistogram) indexLabel(power int) string {
 	return strconv.Itoa(1 << power)
 }
 
 // https://github.com/iovisor/bpftrace/blob/1ece0d0b1441aa70d4a6b324fb852954a5989eab/src/output.cpp#L166
-func (h Histogram) String() string {
+func (h LogHistogram) String() string {
 	var minIdx = -1
 	var maxIdx = 0
 	var maxVal uint64
@@ -59,7 +65,7 @@ func (h Histogram) String() string {
 		} else if i == 2 {
 			header = "[1]"
 		} else {
-			header = "[" + indexLabel(i-2) + ", " + indexLabel(i-1) + ")"
+			header = "[" + h.indexLabel(i-2) + ", " + h.indexLabel(i-1) + ")"
 		}
 
 		maxWidth := 52
@@ -72,7 +78,7 @@ func (h Histogram) String() string {
 	return out
 }
 
-func (h *Histogram) Record(val uint64) error {
+func (h *LogHistogram) Record(val uint64) error {
 	i := uint64(math.Floor(2 + math.Log2(float64(val))))
 	if val == 0 {
 		i = 1
@@ -83,4 +89,8 @@ func (h *Histogram) Record(val uint64) error {
 	h.Bins[i]++
 	h.Count++
 	return nil
+}
+
+func (h LogHistogram) GetCount() uint64 {
+	return h.Count
 }

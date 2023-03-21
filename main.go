@@ -21,8 +21,18 @@ import (
 var group = flag.Bool("g", false, `if enabled, input is expected in "key val" format; defaults to false`)
 var pprof = flag.Bool("pprof", false, `if enabled, cpu profile is taken; defaults to false`)
 
+var linear = flag.Bool("linear", false, `if enabled, collected histogram is linear`)
+var min = flag.Int("min", 0, `minimum value`)
+var max = flag.Int("max", 1000, `maximum value`)
+var step = flag.Int("step", 10, `step`)
+
 func run(r io.Reader, w io.Writer) error {
-	h := hist.New()
+	var h hist.Histogram
+	if *linear {
+		h = hist.NewLinear(*min, *max, *step)
+	} else {
+		h = hist.NewLog()
+	}
 
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
@@ -60,7 +70,7 @@ func run(r io.Reader, w io.Writer) error {
 }
 
 func runWithGroup(r io.Reader, w io.Writer) error {
-	m := make(map[string]*hist.Histogram)
+	m := make(map[string]hist.Histogram)
 
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
@@ -88,7 +98,12 @@ func runWithGroup(r io.Reader, w io.Writer) error {
 		strkey := string(key)
 		h, ok := m[strkey]
 		if !ok {
-			h = hist.New()
+			var h hist.Histogram
+			if *linear {
+				h = hist.NewLinear(*min, *max, *step)
+			} else {
+				h = hist.NewLog()
+			}
 			m[strkey] = h
 		}
 
@@ -115,10 +130,10 @@ func runWithGroup(r io.Reader, w io.Writer) error {
 		kj := keys[j]
 		mi := m[ki]
 		mj := m[kj]
-		if mi.Count == mj.Count {
+		if mi.GetCount() == mj.GetCount() {
 			return ki > kj
 		}
-		return mi.Count > mj.Count
+		return mi.GetCount() > mj.GetCount()
 	})
 
 	for _, k := range keys {
