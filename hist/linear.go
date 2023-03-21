@@ -47,7 +47,8 @@ func (h LinearHistogram) String() string {
 		return ""
 	}
 
-	var startVal, endVal int
+	var startVal = -1
+	var endVal int
 
 	buckets := (h.Max - h.Min) / h.Step
 	for i := 0; i <= buckets+1; i++ {
